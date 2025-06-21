@@ -1,18 +1,17 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { 
   Home, 
   Users, 
+  UserPlus, 
   FolderOpen, 
+  CheckSquare, 
   FileText, 
-  DollarSign, 
-  Clock, 
-  Settings, 
-  BarChart3,
-  ChevronLeft,
-  ChevronRight
+  Receipt, 
+  Clock,
+  Settings,
+  BarChart3
 } from "lucide-react";
 
 interface SidebarProps {
@@ -22,84 +21,107 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isAdmin = false, currentSection, onSectionChange }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const adminNavItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "tenants", label: "Tenants", icon: Users },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "templates", label: "Templates", icon: FileText },
-    { id: "settings", label: "Settings", icon: Settings },
+  const navigationItems = [
+    { 
+      id: "dashboard", 
+      label: "Dashboard", 
+      icon: Home, 
+      forAdmin: false 
+    },
+    { 
+      id: "clients", 
+      label: "Clients", 
+      icon: Users, 
+      forAdmin: false 
+    },
+    { 
+      id: "leads", 
+      label: "Leads", 
+      icon: UserPlus, 
+      forAdmin: false 
+    },
+    { 
+      id: "projects", 
+      label: "Projects", 
+      icon: FolderOpen, 
+      forAdmin: false 
+    },
+    { 
+      id: "tasks", 
+      label: "Tasks", 
+      icon: CheckSquare, 
+      forAdmin: false 
+    },
+    { 
+      id: "proposals", 
+      label: "Proposals", 
+      icon: FileText, 
+      forAdmin: false 
+    },
+    { 
+      id: "invoices", 
+      label: "Invoices", 
+      icon: Receipt, 
+      forAdmin: false 
+    },
+    { 
+      id: "time-tracking", 
+      label: "Time Tracking", 
+      icon: Clock, 
+      forAdmin: false 
+    },
+    { 
+      id: "analytics", 
+      label: "Analytics", 
+      icon: BarChart3, 
+      forAdmin: true 
+    },
+    { 
+      id: "settings", 
+      label: "Settings", 
+      icon: Settings, 
+      forAdmin: true 
+    }
   ];
 
-  const userNavItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "clients", label: "Clients", icon: Users },
-    { id: "projects", label: "Projects", icon: FolderOpen },
-    { id: "proposals", label: "Proposals", icon: FileText },
-    { id: "invoices", label: "Invoices", icon: DollarSign },
-    { id: "time", label: "Time Tracking", icon: Clock },
-    { id: "settings", label: "Settings", icon: Settings },
-  ];
-
-  const navItems = isAdmin ? adminNavItems : userNavItems;
+  const filteredItems = navigationItems.filter(item => 
+    !item.forAdmin || (item.forAdmin && isAdmin)
+  );
 
   return (
-    <div className={cn(
-      "h-screen bg-white border-r border-cliento-gray-200 transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      <div className="flex items-center justify-between p-4 border-b border-cliento-gray-200">
-        {!isCollapsed && (
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-cliento-blue rounded-lg flex items-center justify-center">
-              <span className="text-white font-heading font-bold">C</span>
-            </div>
-            <span className="font-heading font-semibold text-lg">Cliento</span>
+    <div className="w-64 bg-white border-r border-cliento-gray-200 h-full flex flex-col">
+      <div className="p-6">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-cliento-blue rounded-lg flex items-center justify-center">
+            <span className="text-white font-heading font-bold">C</span>
           </div>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 h-8 w-8"
-        >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
+          <span className="text-xl font-heading font-bold text-cliento-gray-900">
+            Cliento
+          </span>
+        </div>
       </div>
 
-      <nav className="p-4 space-y-2">
-        {navItems.map((item) => (
-          <Button
-            key={item.id}
-            variant={currentSection === item.id ? "default" : "ghost"}
-            className={cn(
-              "w-full justify-start transition-colors",
-              currentSection === item.id 
-                ? "bg-cliento-blue text-white" 
-                : "hover:bg-cliento-gray-100 hover:text-cliento-blue",
-              isCollapsed ? "px-2" : "px-3"
-            )}
-            onClick={() => onSectionChange(item.id)}
-          >
-            <item.icon className={cn("h-4 w-4", isCollapsed ? "mr-0" : "mr-2")} />
-            {!isCollapsed && <span>{item.label}</span>}
-          </Button>
-        ))}
+      <nav className="flex-1 px-4 space-y-1">
+        {filteredItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Button
+              key={item.id}
+              variant="ghost"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                currentSection === item.id
+                  ? "bg-cliento-blue/10 text-cliento-blue border-r-2 border-cliento-blue"
+                  : "text-cliento-gray-600 hover:text-cliento-gray-900 hover:bg-cliento-gray-50"
+              )}
+              onClick={() => onSectionChange(item.id)}
+            >
+              <Icon className="mr-3 h-4 w-4" />
+              {item.label}
+            </Button>
+          );
+        })}
       </nav>
-
-      {!isCollapsed && (
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="bg-cliento-gray-50 rounded-lg p-3 text-center">
-            <p className="text-sm font-medium text-cliento-gray-600">
-              {isAdmin ? "Admin Portal" : "User Portal"}
-            </p>
-            <p className="text-xs text-cliento-gray-500 mt-1">
-              {isAdmin ? "Manage your CRM" : "Manage your business"}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
