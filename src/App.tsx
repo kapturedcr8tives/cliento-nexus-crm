@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +11,7 @@ import { UserDashboard } from "./components/dashboard/UserDashboard";
 import { ClientsPage } from "./components/crm/ClientsPage";
 import { ProjectsPage } from "./components/crm/ProjectsPage";
 import { TasksPage } from "./components/crm/TasksPage";
-import { NotFound } from "./pages/NotFound";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
