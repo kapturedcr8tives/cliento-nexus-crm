@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -24,8 +24,9 @@ interface SidebarProps {
   onSectionChange: (section: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isAdmin, currentSection, onSectionChange }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isAdmin }) => {
   const { profile } = useAuth();
+  const location = useLocation();
 
   const navigationItems = [
     {
@@ -108,10 +109,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isAdmin, currentSection, onSec
     await supabase.auth.signOut();
   };
 
-  const handleNavClick = (item: any) => {
-    onSectionChange(item.key);
-  };
-
   return (
     <div className="bg-white border-r border-gray-200 h-full flex flex-col w-64 transition-all duration-300">
       {/* Logo */}
@@ -128,20 +125,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isAdmin, currentSection, onSec
       <nav className="flex-1 px-4 py-6 space-y-2">
         {filteredNavigation.map((item) => {
           const Icon = item.icon;
-          const isActive = currentSection === item.key;
           return (
-            <button
+            <NavLink
               key={item.href}
-              onClick={() => handleNavClick(item)}
-              className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-cliento-blue text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              to={item.href}
+              className={({ isActive }) =>
+                `w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-cliento-blue text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`
+              }
             >
               <Icon className="w-5 h-5" />
               <span className="ml-3">{item.label}</span>
-            </button>
+            </NavLink>
           );
         })}
       </nav>

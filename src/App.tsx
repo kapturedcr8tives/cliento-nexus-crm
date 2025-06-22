@@ -12,6 +12,12 @@ import { UserDashboard } from "./components/dashboard/UserDashboard";
 import { ClientsPage } from "./components/crm/ClientsPage";
 import { ProjectsPage } from "./components/crm/ProjectsPage";
 import { TasksPage } from "./components/crm/TasksPage";
+import { ProposalsPage } from "./pages/ProposalsPage";
+import { InvoicesPage } from "./pages/InvoicesPage";
+import { TimeTrackingPage } from "./pages/TimeTrackingPage";
+import { AnalyticsPage } from "./pages/AnalyticsPage";
+import { AIAssistantPage } from "./pages/AIAssistantPage";
+import { SettingsPage } from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +47,12 @@ function AppContent() {
           <Route path="clients" element={<ClientsPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="proposals" element={<ProposalsPage />} />
+          <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="time-tracking" element={<TimeTrackingPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="ai-assistant" element={<AIAssistantPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
