@@ -1,127 +1,174 @@
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { 
-  Home, 
+  LayoutDashboard, 
   Users, 
-  UserPlus, 
   FolderOpen, 
   CheckSquare, 
   FileText, 
-  Receipt, 
+  DollarSign, 
   Clock,
+  BarChart3,
   Settings,
-  BarChart3
-} from "lucide-react";
+  LogOut,
+  Sparkles
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SidebarProps {
-  isAdmin?: boolean;
-  currentSection: string;
-  onSectionChange: (section: string) => void;
+  isCollapsed: boolean;
 }
 
-export function Sidebar({ isAdmin = false, currentSection, onSectionChange }: SidebarProps) {
+export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
+  const { profile } = useAuth();
+
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
+
   const navigationItems = [
-    { 
-      id: "dashboard", 
-      label: "Dashboard", 
-      icon: Home, 
-      forAdmin: false 
+    {
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+      href: '/',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "clients", 
-      label: "Clients", 
-      icon: Users, 
-      forAdmin: false 
+    {
+      label: 'Clients',
+      icon: Users,
+      href: '/clients',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "leads", 
-      label: "Leads", 
-      icon: UserPlus, 
-      forAdmin: false 
+    {
+      label: 'Projects',
+      icon: FolderOpen,
+      href: '/projects',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "projects", 
-      label: "Projects", 
-      icon: FolderOpen, 
-      forAdmin: false 
+    {
+      label: 'Tasks',
+      icon: CheckSquare,
+      href: '/tasks',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "tasks", 
-      label: "Tasks", 
-      icon: CheckSquare, 
-      forAdmin: false 
+    {
+      label: 'Proposals',
+      icon: FileText,
+      href: '/proposals',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "proposals", 
-      label: "Proposals", 
-      icon: FileText, 
-      forAdmin: false 
+    {
+      label: 'Invoices',
+      icon: DollarSign,
+      href: '/invoices',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "invoices", 
-      label: "Invoices", 
-      icon: Receipt, 
-      forAdmin: false 
+    {
+      label: 'Time Tracking',
+      icon: Clock,
+      href: '/time-tracking',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "time-tracking", 
-      label: "Time Tracking", 
-      icon: Clock, 
-      forAdmin: false 
+    {
+      label: 'Analytics',
+      icon: BarChart3,
+      href: '/analytics',
+      roles: ['admin', 'super_admin', 'manager']
     },
-    { 
-      id: "analytics", 
-      label: "Analytics", 
-      icon: BarChart3, 
-      forAdmin: true 
+    {
+      label: 'AI Assistant',
+      icon: Sparkles,
+      href: '/ai-assistant',
+      roles: ['admin', 'super_admin', 'manager', 'member']
     },
-    { 
-      id: "settings", 
-      label: "Settings", 
-      icon: Settings, 
-      forAdmin: true 
+    {
+      label: 'Settings',
+      icon: Settings,
+      href: '/settings',
+      roles: ['admin', 'super_admin']
     }
   ];
 
-  const filteredItems = navigationItems.filter(item => 
-    !item.forAdmin || (item.forAdmin && isAdmin)
+  const filteredNavigation = navigationItems.filter(item => 
+    item.roles.includes(profile?.role || 'member')
   );
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
-    <div className="w-64 bg-white border-r border-cliento-gray-200 h-full flex flex-col">
-      <div className="p-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-cliento-blue rounded-lg flex items-center justify-center">
-            <span className="text-white font-heading font-bold">C</span>
+    <div className={`bg-white border-r border-gray-200 h-full flex flex-col ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+      {/* Logo */}
+      <div className="flex items-center justify-center h-16 border-b border-gray-200">
+        {!isCollapsed ? (
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-cliento-blue rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">C</span>
+            </div>
+            <span className="text-xl font-bold text-cliento-blue">Cliento</span>
           </div>
-          <span className="text-xl font-heading font-bold text-cliento-gray-900">
-            Cliento
-          </span>
-        </div>
+        ) : (
+          <div className="w-8 h-8 bg-cliento-blue rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">C</span>
+          </div>
+        )}
       </div>
 
-      <nav className="flex-1 px-4 space-y-1">
-        {filteredItems.map((item) => {
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {filteredNavigation.map((item) => {
           const Icon = item.icon;
           return (
-            <Button
-              key={item.id}
-              variant="ghost"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                currentSection === item.id
-                  ? "bg-cliento-blue/10 text-cliento-blue border-r-2 border-cliento-blue"
-                  : "text-cliento-gray-600 hover:text-cliento-gray-900 hover:bg-cliento-gray-50"
-              )}
-              onClick={() => onSectionChange(item.id)}
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) =>
+                `flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-cliento-blue text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                } ${isCollapsed ? 'justify-center' : ''}`
+              }
             >
-              <Icon className="mr-3 h-4 w-4" />
-              {item.label}
-            </Button>
+              <Icon className="w-5 h-5" />
+              {!isCollapsed && <span className="ml-3">{item.label}</span>}
+            </NavLink>
           );
         })}
       </nav>
+
+      {/* User Profile & Logout */}
+      <div className="border-t border-gray-200 p-4">
+        {!isCollapsed && profile && (
+          <div className="mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-gray-700">
+                  {profile.first_name?.[0] || profile.email[0].toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {profile.first_name} {profile.last_name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">{profile.role}</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <Button
+          onClick={handleLogout}
+          variant="outline"
+          size={isCollapsed ? "icon" : "sm"}
+          className="w-full"
+        >
+          <LogOut className="w-4 h-4" />
+          {!isCollapsed && <span className="ml-2">Logout</span>}
+        </Button>
+      </div>
     </div>
   );
-}
+};
