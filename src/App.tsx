@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useAuth, AuthProvider } from "./hooks/useAuth";
 import { AuthPage } from "./components/auth/AuthPage";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
@@ -18,9 +18,23 @@ import { TimeTrackingPage } from "./pages/TimeTrackingPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { AIAssistantPage } from "./pages/AIAssistantPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { ErrorBoundary } from "./components/common/ErrorBoundary";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error: any) => {
+        // Don't retry on auth errors
+        if (error?.code === 'PGRST301' || error?.message?.includes('JWT')) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 function AppContent() {
   const { user, profile, loading } = useAuth();
@@ -62,15 +76,17 @@ function AppContent() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <AppContent />
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <AppContent />
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

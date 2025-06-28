@@ -53,24 +53,20 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Cliento brand colors
-        'cliento-blue': {
-          DEFAULT: '#3B82F6',
-          dark: '#2563EB',
-          light: '#DBEAFE'
+        // Custom Cliento colors
+        "cliento-blue": "hsl(var(--cliento-blue))",
+        "cliento-gray": {
+          50: "hsl(var(--cliento-gray-50))",
+          100: "hsl(var(--cliento-gray-100))",
+          200: "hsl(var(--cliento-gray-200))",
+          300: "hsl(var(--cliento-gray-300))",
+          400: "hsl(var(--cliento-gray-400))",
+          500: "hsl(var(--cliento-gray-500))",
+          600: "hsl(var(--cliento-gray-600))",
+          700: "hsl(var(--cliento-gray-700))",
+          800: "hsl(var(--cliento-gray-800))",
+          900: "hsl(var(--cliento-gray-900))",
         },
-        'cliento-gray': {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827'
-        }
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -91,10 +87,6 @@ const config: Config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      fontFamily: {
-        'heading': ['Inter', 'sans-serif'],
-        'body': ['Inter', 'sans-serif']
-      }
     },
   },
   plugins: [require("tailwindcss-animate")],
